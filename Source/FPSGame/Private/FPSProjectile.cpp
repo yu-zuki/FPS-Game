@@ -44,5 +44,5 @@ void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 
 	MakeNoise(1.0f, Instigator,GetActorLocation());
 	
-	//Destroy();
+	Destroy();
 }
