@@ -6,6 +6,7 @@
 #include <DrawDebugHelpers.h>
 #include <Engine/EngineTypes.h>
 #include <GameFramework/Actor.h>
+#include "FPSCharacter.h"
 
 // Sets default values
 AFPSAIGua::AFPSAIGua()
@@ -36,6 +37,27 @@ void AFPSAIGua::OnPawnSee(APawn* SeePawn)
 		return;
 	}
 
+	//ÉvÉåÉCÉÑÅ[Çå©Ç¬Ç©Ç¡ÇΩÇÁ
+	AFPSCharacter* APlayer = Cast<AFPSCharacter>(SeePawn);
+	if (APlayer)
+	{
+		FVector Location = APlayer->GetActorLocation();
+		FVector Direction = Location - GetActorLocation();
+
+		Direction.Normalize();
+
+		FVector NewVector = GetActorLocation() + (Direction * 50);
+		SetActorLocation(NewVector);
+
+		FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
+		NewLookAt.Pitch = 0.0f;
+		NewLookAt.Roll = 0.0f;
+
+		SetActorRotation(NewLookAt);
+
+		UE_LOG(LogTemp,Warning, TEXT("See Player On"));
+	}
+
 	DrawDebugSphere(GetWorld(), SeePawn->GetActorLocation(), 32.f, 12, FColor::Red, false, 10.f);
 	//UE_LOG(LogTemp, Warning, TEXT("DEBUG Can Draw Pawn"));
 }
@@ -54,8 +76,8 @@ void AFPSAIGua::OnNoiseHeard(APawn* _Instigator, const FVector& Location, float 
 
 	SetActorRotation(NewLookAt);
 
-	GetWorldTimerManager().ClearTimer(TimerHandle_ResetOrientation);
-	GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAIGua::ResetOrientation, 3.0f);
+	//GetWorldTimerManager().ClearTimer(TimerHandle_ResetOrientation);
+	//GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAIGua::ResetOrientation, 3.0f);
 }
 
 void AFPSAIGua::ResetOrientation()

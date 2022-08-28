@@ -2,10 +2,10 @@
 
 
 #include "FPSBlackHole.h"
-#include <Components/StaticMeshComponent.h>
 #include <Components/SphereComponent.h>
 #include <Components/PrimitiveComponent.h>
 #include "FPSProjectile.h"
+#include <Components/StaticMeshComponent.h>
 
 // Sets default values
 AFPSBlackHole::AFPSBlackHole()
