@@ -7,6 +7,7 @@
 #include <Engine/EngineTypes.h>
 #include <GameFramework/Actor.h>
 #include "FPSCharacter.h"
+#include "FPSGameMode.h"
 
 // Sets default values
 AFPSAIGua::AFPSAIGua()
@@ -58,6 +59,14 @@ void AFPSAIGua::OnPawnSee(APawn* SeePawn)
 		UE_LOG(LogTemp,Warning, TEXT("See Player On"));
 	}
 
+	//ゲームモード取得して、ゲームオーバーの　終了処理をします。
+	AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
+	if (GM) {
+		//BPにゲームオーバーを送る
+		GM->CompletMission(SeePawn, false);
+	}
+
+
 	DrawDebugSphere(GetWorld(), SeePawn->GetActorLocation(), 32.f, 12, FColor::Red, false, 10.f);
 	//UE_LOG(LogTemp, Warning, TEXT("DEBUG Can Draw Pawn"));
 }
@@ -85,10 +94,21 @@ void AFPSAIGua::ResetOrientation()
 	SetActorRotation(OriginlRotation);
 }
 
+void AFPSAIGua::SetGuardState(EAIState newState)
+{
+	if (GuardState == newState)
+	{
+		return;
+	}
+	
+	GuardState = newState;
+
+	OnStateChanged(GuardState);
+
+}
 // Called every frame
 void AFPSAIGua::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
-

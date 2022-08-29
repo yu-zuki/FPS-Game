@@ -16,14 +16,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Spectating")
 	TSubclassOf<AActor> SpectatingViewpointClass;
 
+	//bool bMissionSuccess;
 public:
 
 	AFPSGameMode();
 
-	void CompletMission(APawn* InstigatorPawn);
+	void CompletMission(APawn* InstigatorPawn, bool bMissionSuccess);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
-	void OnMissionCompleted(APawn* InstigatorPawn);
+	void OnMissionCompleted(APawn* InstigatorPawn, bool bMissionSuccess);
 };
 
 

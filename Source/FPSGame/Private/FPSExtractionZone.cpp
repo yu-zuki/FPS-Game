@@ -39,10 +39,10 @@ void AFPSExtractionZone::HandleOverlap(UPrimitiveComponent* OverlappedComponent,
 
 	if (MyPawn->bIsCarryingObjective) 
 	{
-		//ゲームモード取得して、終了処理をします。
+		//ゲームモード取得して、クリアでの終了処理をします。
 		AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 		if (GM) {
-			GM->CompletMission(MyPawn);
+			GM->CompletMission(MyPawn, true);
 		}
 	}
 	else 

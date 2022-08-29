@@ -16,7 +16,7 @@ AFPSGameMode::AFPSGameMode()
 	HUDClass = AFPSHUD::StaticClass();
 }
 
-void AFPSGameMode::CompletMission(APawn* InstigatorPawn)
+void AFPSGameMode::CompletMission(APawn* InstigatorPawn, bool bMissionSuccess)
 {
 	if (InstigatorPawn) 
 	{
@@ -46,6 +46,7 @@ void AFPSGameMode::CompletMission(APawn* InstigatorPawn)
 		}
 	}
 
-	OnMissionCompleted(InstigatorPawn);
+	//BPÇÃÇ»Ç©Ç≈åƒÇ—èoÇ∑
+	OnMissionCompleted(InstigatorPawn, bMissionSuccess);
 
 }
