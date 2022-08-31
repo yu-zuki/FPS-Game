@@ -9,6 +9,7 @@
 #include "FPSCharacter.h"
 #include "FPSGameMode.h"
 #include <NavigationSystem.h>
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 
 // Sets default values
 AFPSAIGua::AFPSAIGua()
@@ -83,7 +84,7 @@ void AFPSAIGua::OnPawnSee(APawn* SeePawn)
 	AController* Controller = GetController();
 	if (Controller)
 	{
-		Controller->StopMovement();
+		//Controller->StopMovement();
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("DEBUG Can Draw Pawn"));
@@ -111,13 +112,6 @@ void AFPSAIGua::OnNoiseHeard(APawn* _Instigator, const FVector& Location, float 
 	SetGuardState(EAIState::Suspicious);
 	GetWorldTimerManager().ClearTimer(TimerHandle_ResetOrientation);
 	GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAIGua::ResetOrientation, 3.0f);
-
-	//プレイヤーを見つかったら、巡回停止
-	AController* Controller = GetController();
-	if (Controller)
-	{
-		Controller->StopMovement();
-	}
 
 }
 
@@ -161,14 +155,14 @@ void AFPSAIGua::Tick(float DeltaTime)
 		FVector Delta = GetActorLocation() - CurrentPatorPoint->GetActorLocation();
 		float DistanceGoal = Delta.Size();
 
-		if (DistanceGoal < 10)
+		if (DistanceGoal < 100)
 		{
 			MoveToNextPatorPoint();
 		}
 	}
 
 }
-
+//次の点に移動する
 void AFPSAIGua::MoveToNextPatorPoint()
 {
 	if (CurrentPatorPoint == nullptr || CurrentPatorPoint == SecondPatorPoint)
@@ -180,5 +174,5 @@ void AFPSAIGua::MoveToNextPatorPoint()
 		CurrentPatorPoint = SecondPatorPoint;
 	}
 
-	UNavigationSystemV1::SimpleMoveToActor(GetController(), CurrentPatorPoint);
+	UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), CurrentPatorPoint);
 }
