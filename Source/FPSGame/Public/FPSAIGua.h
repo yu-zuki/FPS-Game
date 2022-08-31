@@ -14,7 +14,7 @@ enum class EAIState : uint8
 	Idle,
 	Suspicious,
 	Alerted
-}
+};
 
 UCLASS()
 class FPSGAME_API AFPSAIGua : public ACharacter
@@ -46,6 +46,7 @@ protected:
 
 	FTimerHandle TimerHandle_ResetOrientation;
 
+	//ìGÇÃèÛë‘
 	EAIState GuardState;
 
 	void SetGuardState(EAIState newState);
@@ -55,5 +56,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+protected:
+	//UPROPERTY(, Category = "Components")
 
 };

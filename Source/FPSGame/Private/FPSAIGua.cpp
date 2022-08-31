@@ -21,6 +21,8 @@ AFPSAIGua::AFPSAIGua()
 	PawnSensingComp->OnHearNoise.AddDynamic(this, &AFPSAIGua::OnNoiseHeard);
 
 	OriginlRotation = GetActorRotation();
+
+	GuardState = EAIState::Idle;
 }
 
 // Called when the game starts or when spawned
@@ -38,26 +40,28 @@ void AFPSAIGua::OnPawnSee(APawn* SeePawn)
 		return;
 	}
 
-	//プレイヤーを見つかったら
-	AFPSCharacter* APlayer = Cast<AFPSCharacter>(SeePawn);
-	if (APlayer)
-	{
-		FVector Location = APlayer->GetActorLocation();
-		FVector Direction = Location - GetActorLocation();
+	////プレイヤーを見つかったら
+	//AFPSCharacter* APlayer = Cast<AFPSCharacter>(SeePawn);
+	//if (APlayer)
+	//{
+	//	FVector Location = APlayer->GetActorLocation();
+	//	FVector Direction = Location - GetActorLocation();
 
-		Direction.Normalize();
+	//	Direction.Normalize();
 
-		FVector NewVector = GetActorLocation() + (Direction * 50);
-		SetActorLocation(NewVector);
+	//	FVector NewVector = GetActorLocation() + (Direction * 50);
+	//	SetActorLocation(NewVector);
 
-		FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
-		NewLookAt.Pitch = 0.0f;
-		NewLookAt.Roll = 0.0f;
+	//	FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
+	//	NewLookAt.Pitch = 0.0f;
+	//	NewLookAt.Roll = 0.0f;
 
-		SetActorRotation(NewLookAt);
+	//	SetActorRotation(NewLookAt);
 
-		UE_LOG(LogTemp,Warning, TEXT("See Player On"));
-	}
+	//	UE_LOG(LogTemp,Warning, TEXT("See Player On"));
+	//}
+
+	DrawDebugSphere(GetWorld(), SeePawn->GetActorLocation(), 32.f, 12, FColor::Red, false, 10.f);
 
 	//ゲームモード取得して、ゲームオーバーの　終了処理をします。
 	AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
@@ -65,14 +69,19 @@ void AFPSAIGua::OnPawnSee(APawn* SeePawn)
 		//BPにゲームオーバーを送る
 		GM->CompletMission(SeePawn, false);
 	}
+	//敵の状態を　警戒　で設定
+	SetGuardState(EAIState::Alerted);
 
 
-	DrawDebugSphere(GetWorld(), SeePawn->GetActorLocation(), 32.f, 12, FColor::Red, false, 10.f);
 	//UE_LOG(LogTemp, Warning, TEXT("DEBUG Can Draw Pawn"));
 }
 
 void AFPSAIGua::OnNoiseHeard(APawn* _Instigator, const FVector& Location, float Volume)
 {
+	if (GuardState == EAIState::Alerted)
+	{
+		return;
+	}
 
 	DrawDebugSphere(GetWorld(), Location, 32.f, 12, FColor::Green, false, 10.f);
 	
@@ -85,13 +94,22 @@ void AFPSAIGua::OnNoiseHeard(APawn* _Instigator, const FVector& Location, float 
 
 	SetActorRotation(NewLookAt);
 
-	//GetWorldTimerManager().ClearTimer(TimerHandle_ResetOrientation);
-	//GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAIGua::ResetOrientation, 3.0f);
+	//敵の状態を　疑わしい　で設定
+	SetGuardState(EAIState::Suspicious);
+	GetWorldTimerManager().ClearTimer(TimerHandle_ResetOrientation);
+	GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAIGua::ResetOrientation, 3.0f);
 }
 
 void AFPSAIGua::ResetOrientation()
 {
+	if (GuardState == EAIState::Alerted)
+	{
+		return;
+	}
+
 	SetActorRotation(OriginlRotation);
+	//敵の状態を　ノーマル　で設定
+	SetGuardState(EAIState::Idle);
 }
 
 void AFPSAIGua::SetGuardState(EAIState newState)
