@@ -84,7 +84,7 @@ void AFPSAIGua::OnPawnSee(APawn* SeePawn)
 	AController* Controller = GetController();
 	if (Controller)
 	{
-		//Controller->StopMovement();
+		Controller->StopMovement();
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("DEBUG Can Draw Pawn"));
@@ -113,6 +113,12 @@ void AFPSAIGua::OnNoiseHeard(APawn* _Instigator, const FVector& Location, float 
 	GetWorldTimerManager().ClearTimer(TimerHandle_ResetOrientation);
 	GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAIGua::ResetOrientation, 3.0f);
 
+	//‰¹‚ð•·‚±‚¦‚½‚çA„‰ñ’âŽ~
+	AController* Controller = GetController();
+	if (Controller)
+	{
+		Controller->StopMovement();
+	}
 }
 
 void AFPSAIGua::ResetOrientation()

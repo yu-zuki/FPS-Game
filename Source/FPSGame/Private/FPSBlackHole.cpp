@@ -9,6 +9,7 @@
 
 // Sets default values
 AFPSBlackHole::AFPSBlackHole()
+	:bCanGravitation(false)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -46,19 +47,23 @@ void AFPSBlackHole::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	TArray<UPrimitiveComponent*> OverlappingComps;
-	OuterSphereComponent->GetOverlappingComponents(OverlappingComps);
-
-	for (int32 i = 0; i < OverlappingComps.Num(); i++)
+	//引力がON　の場合のみ　オブジェクトに引力を与える
+	if (bCanGravitation)
 	{
-		UPrimitiveComponent* PrimComp = OverlappingComps[i];
-		// PrimCompがあれば　＆＆　物理効果がONになってるなら実行する
-		if (PrimComp && PrimComp->IsSimulatingPhysics())
-		{
-			const float SphereRadius = OuterSphereComponent->GetScaledSphereRadius();
-			const float ForceStrength = -2000;
+		TArray<UPrimitiveComponent*> OverlappingComps;
+		OuterSphereComponent->GetOverlappingComponents(OverlappingComps);
 
-			PrimComp->AddRadialForce(GetActorLocation(),SphereRadius,ForceStrength,ERadialImpulseFalloff::RIF_Constant, true);	//最后一个参数 加速度变化
+		for (int32 i = 0; i < OverlappingComps.Num(); i++)
+		{
+			UPrimitiveComponent* PrimComp = OverlappingComps[i];
+			// PrimCompがあれば　＆＆　物理効果がONになってるなら実行する
+			if (PrimComp && PrimComp->IsSimulatingPhysics())
+			{
+				const float SphereRadius = OuterSphereComponent->GetScaledSphereRadius();
+				const float ForceStrength = -2000;
+
+				PrimComp->AddRadialForce(GetActorLocation(), SphereRadius, ForceStrength, ERadialImpulseFalloff::RIF_Constant, true);	//最后一个参数 加速度变化
+			}
 		}
 	}
 }
