@@ -8,6 +8,7 @@
 #include <GameFramework/Actor.h>
 #include "FPSCharacter.h"
 #include "FPSGameMode.h"
+#include <NavigationSystem.h>
 
 // Sets default values
 AFPSAIGua::AFPSAIGua()
@@ -23,6 +24,8 @@ AFPSAIGua::AFPSAIGua()
 	OriginlRotation = GetActorRotation();
 
 	GuardState = EAIState::Idle;
+
+	CurrentPatorPoint = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -30,6 +33,10 @@ void AFPSAIGua::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (bPatrol)
+	{
+		MoveToNextPatorPoint();
+	}
 }
 
 void AFPSAIGua::OnPawnSee(APawn* SeePawn)
@@ -72,6 +79,12 @@ void AFPSAIGua::OnPawnSee(APawn* SeePawn)
 	//敵の状態を　警戒　で設定
 	SetGuardState(EAIState::Alerted);
 
+	//プレイヤーを見つかったら、巡回停止
+	AController* Controller = GetController();
+	if (Controller)
+	{
+		Controller->StopMovement();
+	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("DEBUG Can Draw Pawn"));
 }
@@ -98,6 +111,14 @@ void AFPSAIGua::OnNoiseHeard(APawn* _Instigator, const FVector& Location, float 
 	SetGuardState(EAIState::Suspicious);
 	GetWorldTimerManager().ClearTimer(TimerHandle_ResetOrientation);
 	GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAIGua::ResetOrientation, 3.0f);
+
+	//プレイヤーを見つかったら、巡回停止
+	AController* Controller = GetController();
+	if (Controller)
+	{
+		Controller->StopMovement();
+	}
+
 }
 
 void AFPSAIGua::ResetOrientation()
@@ -110,6 +131,12 @@ void AFPSAIGua::ResetOrientation()
 	SetActorRotation(OriginlRotation);
 	//敵の状態を　ノーマル　で設定
 	SetGuardState(EAIState::Idle);
+
+	//
+	if (bPatrol)
+	{
+		MoveToNextPatorPoint();
+	}
 }
 
 void AFPSAIGua::SetGuardState(EAIState newState)
@@ -129,4 +156,29 @@ void AFPSAIGua::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (CurrentPatorPoint)
+	{
+		FVector Delta = GetActorLocation() - CurrentPatorPoint->GetActorLocation();
+		float DistanceGoal = Delta.Size();
+
+		if (DistanceGoal < 10)
+		{
+			MoveToNextPatorPoint();
+		}
+	}
+
+}
+
+void AFPSAIGua::MoveToNextPatorPoint()
+{
+	if (CurrentPatorPoint == nullptr || CurrentPatorPoint == SecondPatorPoint)
+	{
+		CurrentPatorPoint = FirstPatorPoint;
+	}
+	else
+	{
+		CurrentPatorPoint = SecondPatorPoint;
+	}
+
+	UNavigationSystemV1::SimpleMoveToActor(GetController(), CurrentPatorPoint);
 }

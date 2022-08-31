@@ -58,6 +58,20 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	//UPROPERTY(, Category = "Components")
+	UPROPERTY(EditInstanceOnly, Category = "AI")
+	bool bPatrol;
+
+	//巡回の場所
+	UPROPERTY(EditInstanceOnly, Category = "AI", meta = (EditCondition = "bPatrol"))
+	AActor* FirstPatorPoint; 
+		
+	UPROPERTY(EditInstanceOnly, Category = "AI", meta = (EditCondition = "bPatrol"))
+	AActor* SecondPatorPoint;
+
+	//今巡回してる場所（ポインター）
+	AActor* CurrentPatorPoint;
+
+	void MoveToNextPatorPoint();
+
 
 };
