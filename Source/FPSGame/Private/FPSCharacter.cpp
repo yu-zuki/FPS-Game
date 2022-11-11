@@ -31,8 +31,10 @@ AFPSCharacter::AFPSCharacter()
 	GunMeshComponent->SetupAttachment(Mesh1PComponent, "GripPoint");
 
 	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("NoiseEitterComp"));
-}
 
+	//GetCapsuleComponent()->SetRelativeRotation(FQuat(270,270,270,0));
+
+}
 
 void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
